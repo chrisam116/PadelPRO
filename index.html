@@ -2,8 +2,14 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Padel Manager Pro 3.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- PWA Settings (عشان ينزل كبرنامج على الموبايل ويشتغل أوفلاين) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#10b981">
+    <title>Padel Manager Pro</title>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
         
@@ -11,7 +17,7 @@
             --bg: #f0f4f8; --surface: #ffffff;
             --primary: #10b981; --primary-dark: #059669;
             --text-main: #1e293b; --text-muted: #64748b;
-            --court-bg: #0277bd; /* Authentic Padel Blue */
+            --court-bg: #0277bd;
             --court-lines: #ffffff;
             --glass-wall: rgba(255, 255, 255, 0.2);
             --team-a: #3b82f6; --team-b: #ef4444;
@@ -21,16 +27,15 @@
         [dir="ltr"] { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         [dir="rtl"] { font-family: 'Cairo', sans-serif; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; transition: 0.2s ease; }
+        * { box-sizing: border-box; margin: 0; padding: 0; transition: 0.2s ease; user-select: none; -webkit-user-select: none; }
         
         body { 
             background-color: var(--bg); color: var(--text-main); min-height: 100vh; 
             display: flex; flex-direction: column; align-items: center; 
-            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-            background-size: 30px 30px;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 30px 30px;
         }
         
-        .header { width: 100%; max-width: 1200px; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: var(--surface); box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-radius: 0 0 20px 20px; margin-bottom: 15px; position: relative; z-index: 10; }
+        .header { width: 100%; max-width: 1200px; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: var(--surface); box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-radius: 0 0 20px 20px; margin-bottom: 15px; z-index: 10; }
         .logo { font-weight: 900; font-size: 1.5rem; color: var(--primary); cursor: pointer; }
         .lang-btn { background: #e2e8f0; border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; color: var(--text-main); }
         
@@ -42,74 +47,64 @@
         button:active { transform: scale(0.96); }
         .btn-primary { background: var(--primary); color: white; padding: 12px 20px; width: 100%; }
         .btn-secondary { background: #e2e8f0; color: var(--text-main); padding: 12px 20px; width: 100%; }
-        input { width: 100%; padding: 12px; font-size: 16px; border: 2px solid #e2e8f0; border-radius: 12px; outline: none; background: #f8fafc; margin-bottom: 10px; }
+        input { width: 100%; padding: 12px; font-size: 16px; border: 2px solid #e2e8f0; border-radius: 12px; outline: none; background: #f8fafc; margin-bottom: 10px; user-select: auto; -webkit-user-select: auto;}
         input:focus { border-color: var(--primary); }
         
         /* Dashboard & Tags */
         .res-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--surface); border-radius: 12px; margin-bottom: 15px; cursor: pointer; border: 1px solid #e2e8f0; box-shadow: var(--shadow); }
-        .res-item:hover { border-color: var(--primary); transform: translateY(-2px); }
         .res-info { display: flex; flex-direction: column; gap: 4px; }
         .res-title { font-weight: 900; font-size: 18px; color: var(--primary-dark); }
-        .res-date { font-size: 12px; color: var(--text-muted); }
-        .res-players { font-size: 13px; color: var(--text-main); background: #f1f5f9; padding: 3px 8px; border-radius: 8px; display: inline-block; margin-top: 5px; }
+        .res-players { font-size: 13px; background: #f1f5f9; padding: 3px 8px; border-radius: 8px; display: inline-block; margin-top: 5px; }
         .tags-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
         .tag { background: #e2e8f0; padding: 5px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
-        .tag span { color: #ef4444; cursor: pointer; font-size: 16px; }
 
-        /* --- NEW GAME LAYOUT (1/3 Score, 2/3 Court) --- */
-        .game-wrapper { display: flex; flex-direction: column; gap: 15px; flex: 1; }
-        
-        @media (min-width: 850px) {
-            .game-wrapper { flex-direction: row; align-items: stretch; height: 75vh; }
-            .score-section { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
-            .court-section { flex: 2; display: flex; flex-direction: column; }
-        }
+        /* Game Layout */
+        .game-wrapper { display: flex; flex-direction: row; gap: 15px; flex: 1; align-items: stretch; height: 100%; }
+        .score-section { flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;}
+        .court-section { flex: 2; display: flex; flex-direction: column; }
 
-        /* Scoreboard Styling */
-        .score-section { gap: 10px; }
-        .team-score-card { flex: 1; background: var(--surface); border-radius: var(--radius); padding: 20px; text-align: center; box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden;}
-        .team-score-card::before { content: ""; position: absolute; top: 0; left: 0; width: 10px; height: 100%; }
+        .team-score-card { flex: 1; background: var(--surface); border-radius: var(--radius); padding: 10px; text-align: center; box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden;}
+        .team-score-card::before { content: ""; position: absolute; top: 0; left: 0; width: 8px; height: 100%; }
         .card-b::before { background: var(--team-b); }
         .card-a::before { background: var(--team-a); }
         
-        .score-team-name { font-size: 22px; font-weight: 900; margin-bottom: 5px; }
-        .score-players { font-size: 14px; color: var(--text-muted); margin-bottom: 15px; background: #f8fafc; padding: 5px; border-radius: 8px; }
-        .score-number { font-size: 60px; font-weight: 900; line-height: 1; margin-bottom: 10px; }
-        .match-badge { display: inline-block; background: #e2e8f0; padding: 5px 15px; border-radius: 20px; font-size: 14px; font-weight: bold; }
+        .score-team-name { font-size: 20px; font-weight: 900; }
+        .score-players { font-size: 12px; color: var(--text-muted); background: #f8fafc; padding: 3px; border-radius: 8px; margin: 5px 0;}
+        .score-number { font-size: 55px; font-weight: 900; line-height: 1; }
 
-        /* Court Styling */
-        .court-section { position: relative; }
+        /* Court */
         .court-container { display: flex; flex: 1; position: relative; }
-        
-        .side-labels { display: flex; flex-direction: column; justify-content: space-around; padding: 0 10px; font-weight: 900; font-size: 18px; color: var(--text-muted); writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg); }
+        .side-labels { display: flex; flex-direction: column; justify-content: space-around; padding: 0 5px; font-weight: 900; font-size: 14px; color: var(--text-muted); writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg); }
         [dir="ltr"] .side-labels { transform: none; }
 
-        .court { 
-            direction: ltr !important; /* Court ALWAYS LTR */
-            background: var(--court-bg); border: 8px solid var(--glass-wall); border-radius: 8px;
-            flex: 1; position: relative; display: flex; flex-direction: column; 
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.4), var(--shadow);
-            overflow: hidden;
-        }
+        .court { direction: ltr !important; background: var(--court-bg); border: 8px solid var(--glass-wall); border-radius: 8px; flex: 1; position: relative; display: flex; flex-direction: column; box-shadow: inset 0 0 50px rgba(0,0,0,0.4); overflow: hidden; }
         .line { background: var(--court-lines); position: absolute; opacity: 0.85; }
         .net { height: 6px; width: 100%; top: 50%; transform: translateY(-50%); background: #fff; z-index: 5; box-shadow: 0 8px 15px rgba(0,0,0,0.6); border-left: 3px solid #cbd5e1; border-right: 3px solid #cbd5e1; }
         .serve-line-top { height: 3px; width: 100%; top: 25%; }
         .serve-line-bottom { height: 3px; width: 100%; bottom: 25%; }
         .center-line { width: 3px; height: 50%; left: 50%; top: 25%; transform: translateX(-50%); }
 
-        /* Touch Areas on Court */
         .half-court { flex: 1; display: flex; position: relative; z-index: 10; cursor: pointer; }
-        .half-court:active { background: rgba(255, 255, 255, 0.15); } /* Visual feedback on tap */
-        
-        .player-zone { flex: 1; display: flex; justify-content: center; align-items: center; flex-direction: column; color: white; font-weight: bold; font-size: 18px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); pointer-events: none; }
-        .server-ind { background: #ffeb3b; color: #000; font-size: 13px; font-weight: 900; padding: 4px 15px; border-radius: 12px; opacity: 0; margin-bottom: 5px; box-shadow: 0 0 15px #ffeb3b; text-shadow: none; }
+        .half-court:active { background: rgba(255, 255, 255, 0.15); }
+        .player-zone { flex: 1; display: flex; justify-content: center; align-items: center; flex-direction: column; color: white; font-weight: bold; font-size: 16px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); pointer-events: none; }
+        .server-ind { background: #ffeb3b; color: #000; font-size: 11px; font-weight: 900; padding: 4px 12px; border-radius: 12px; opacity: 0; margin-bottom: 5px; box-shadow: 0 0 15px #ffeb3b; text-shadow: none; }
         .is-server .server-ind { opacity: 1; animation: bounce 0.8s infinite alternate; }
-
         @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-5px); } }
 
-        /* Alerts & Tables */
-        .golden-alert { display: none; background: #fbbf24; color: #000; padding: 12px; font-weight: 900; font-size: 18px; border-radius: 12px; text-align: center; margin-bottom: 15px; animation: flash 1s infinite alternate; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.5); }
+        .golden-alert { display: none; background: #fbbf24; color: #000; padding: 10px; font-weight: 900; font-size: 16px; border-radius: 12px; text-align: center; margin-bottom: 10px; animation: flash 1s infinite alternate; }
         @keyframes flash { from { opacity: 1; } to { opacity: 0.6; } }
+
+        /* Rotate Screen Warning for Mobile Portrait */
+        #rotate-warning { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
+        #rotate-warning svg { width: 80px; height: 80px; margin-bottom: 20px; animation: rotatePhone 2s infinite ease-in-out; fill: var(--primary); }
+        @keyframes rotatePhone { 0% { transform: rotate(0deg); } 50% { transform: rotate(-90deg); } 100% { transform: rotate(-90deg); } }
+
+        /* Force Landscape warning ONLY on Game Screen when in Portrait */
+        @media screen and (max-width: 768px) and (orientation: portrait) {
+            body.in-game #screen-game { display: none !important; }
+            body.in-game .header { display: none !important; }
+            body.in-game #rotate-warning { display: flex; }
+        }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; min-width: 500px; }
         th, td { padding: 12px 8px; text-align: center; border-bottom: 1px solid #e2e8f0; }
@@ -120,7 +115,7 @@
         @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         
         .screen { display: none; }
-        .active-screen { display: flex; flex-direction: column; animation: fadeIn 0.3s ease; }
+        .active-screen { display: flex; flex-direction: column; animation: fadeIn 0.3s ease; height: 100%;}
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -131,6 +126,13 @@
     <button class="lang-btn" onclick="toggleLang()" id="lang-btn">English</button>
 </div>
 
+<!-- Rotate Warning -->
+<div id="rotate-warning">
+    <svg viewBox="0 0 24 24"><path d="M16 1H8C6.9 1 6 1.9 6 3v18c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm0 18H8V5h8v14z"/></svg>
+    <h2 data-i18n="rotateMsg">يرجى تدوير الهاتف بالعرض للمتابعة</h2>
+    <p style="color: gray;" data-i18n="rotateDesc">الملعب يحتاج مساحة أوسع لعرضه بشكل صحيح.</p>
+</div>
+
 <div class="container">
     
     <!-- Dashboard Screen -->
@@ -139,11 +141,11 @@
         <button class="btn-secondary" style="margin-bottom: 20px;" onclick="showGlobalStats()" data-i18n="globalStats">🌍 إحصائيات كل اللاعبين</button>
         
         <h3 data-i18n="historyTitle">التاريخ والحجوزات السابقة</h3>
-        <div id="reservations-list"></div>
+        <div id="reservations-list" style="flex:1; overflow-y:auto;"></div>
 
         <div style="display: flex; gap: 10px; margin-top: 20px; border-top: 2px solid #e2e8f0; padding-top: 15px;">
-            <button class="btn-secondary" style="font-size: 13px;" onclick="exportDB()" data-i18n="exportDB">📥 حفظ نسخة</button>
-            <button class="btn-secondary" style="font-size: 13px;" onclick="document.getElementById('file-input').click()" data-i18n="importDB">📤 استرجاع</button>
+            <button class="btn-secondary" style="font-size: 13px; background: #3b82f6; color: white;" onclick="exportAndShareDB()" data-i18n="exportDB">📤 مشاركة ونسخ الداتا</button>
+            <button class="btn-secondary" style="font-size: 13px;" onclick="document.getElementById('file-input').click()" data-i18n="importDB">📥 استرجاع داتا</button>
             <input type="file" id="file-input" style="display:none;" accept=".json" onchange="importDB(event)">
         </div>
     </div>
@@ -160,7 +162,6 @@
                 <button class="btn-primary" style="width: auto;" onclick="addPlayerToSetup()" data-i18n="addBtn">إضافة</button>
             </div>
             <datalist id="global-players-list"></datalist>
-            
             <div id="setup-tags" class="tags-container"></div>
             
             <button class="btn-primary" style="margin-top: 10px;" onclick="startNewReservation()" data-i18n="startBtn">🚀 بدء</button>
@@ -168,62 +169,45 @@
         </div>
     </div>
 
-    <!-- GAME SCREEN (Major Redesign) -->
-    <div id="screen-game" class="screen" style="flex:1;">
+    <!-- GAME SCREEN -->
+    <div id="screen-game" class="screen">
         <div class="golden-alert" id="golden-alert" data-i18n="goldenAlert">🔥 نقطة ذهبية (الجولدن بوينت)! 🔥</div>
 
         <div class="game-wrapper">
-            <!-- 1/3 SCOREBOARD -->
             <div class="score-section">
-                <!-- Team B Score -->
                 <div class="team-score-card card-b">
                     <div class="score-team-name" style="color: var(--team-b);" data-i18n="teamB">فريق ب</div>
                     <div class="score-players" id="sb-players-b">Player 3 & Player 4</div>
                     <div class="score-number" id="point-b">0</div>
-                    <div><span class="match-badge"><span data-i18n="matchesWon">ماتشات:</span> <span id="match-score-b">0</span></span></div>
+                    <div><span class="match-badge"><span data-i18n="matchesWon">ماتشات:</span> <span id="match-score-b" style="color:var(--team-b)">0</span></span></div>
                 </div>
-                
-                <!-- Team A Score -->
                 <div class="team-score-card card-a">
                     <div class="score-team-name" style="color: var(--team-a);" data-i18n="teamA">فريق أ</div>
                     <div class="score-players" id="sb-players-a">Player 1 & Player 2</div>
                     <div class="score-number" id="point-a">0</div>
-                    <div><span class="match-badge"><span data-i18n="matchesWon">ماتشات:</span> <span id="match-score-a">0</span></span></div>
+                    <div><span class="match-badge"><span data-i18n="matchesWon">ماتشات:</span> <span id="match-score-a" style="color:var(--team-a)">0</span></span></div>
                 </div>
             </div>
 
-            <!-- 2/3 COURT -->
             <div class="court-section">
                 <div class="court-container">
                     <div class="side-labels"><span data-i18n="teamB">فريق ب</span></div>
-                    
                     <div class="court">
                         <div class="line serve-line-top"></div>
                         <div class="line serve-line-bottom"></div>
                         <div class="line center-line"></div>
                         <div class="net"></div>
                         
-                        <!-- Touch zone for Team B -->
-                        <div class="half-court" style="align-items: flex-start;" onclick="addPoint('B')" title="Tap to add point for Team B">
-                            <div class="player-zone" id="zone-B-Left">
-                                <div class="server-ind" data-i18n="serveTxt">🎾 السيرف</div><span id="name-B-Left">-</span>
-                            </div>
-                            <div class="player-zone" id="zone-B-Right">
-                                <div class="server-ind" data-i18n="serveTxt">🎾 السيرف</div><span id="name-B-Right">-</span>
-                            </div>
+                        <div class="half-court" style="align-items: flex-start;" onclick="addPoint('B')">
+                            <div class="player-zone" id="zone-B-Left"><div class="server-ind" data-i18n="serveTxt">🎾 السيرف</div><span id="name-B-Left">-</span></div>
+                            <div class="player-zone" id="zone-B-Right"><div class="server-ind" data-i18n="serveTxt">🎾 السيرف</div><span id="name-B-Right">-</span></div>
                         </div>
                         
-                        <!-- Touch zone for Team A -->
-                        <div class="half-court" style="align-items: flex-end;" onclick="addPoint('A')" title="Tap to add point for Team A">
-                            <div class="player-zone" id="zone-A-Left">
-                                <div class="server-ind" data-i18n="serveTxt">🎾 السيرف</div><span id="name-A-Left">-</span>
-                            </div>
-                            <div class="player-zone" id="zone-A-Right">
-                                <div class="server-ind" data-i18n="serveTxt">🎾 السيرف</div><span id="name-A-Right">-</span>
-                            </div>
+                        <div class="half-court" style="align-items: flex-end;" onclick="addPoint('A')">
+                            <div class="player-zone" id="zone-A-Left"><div class="server-ind" data-i18n="serveTxt">🎾 السيرف</div><span id="name-A-Left">-</span></div>
+                            <div class="player-zone" id="zone-A-Right"><div class="server-ind" data-i18n="serveTxt">🎾 السيرف</div><span id="name-A-Right">-</span></div>
                         </div>
                     </div>
-
                     <div class="side-labels"><span data-i18n="teamA">فريق أ</span></div>
                 </div>
             </div>
@@ -231,11 +215,11 @@
         
         <div style="display: flex; gap: 10px; margin-top: 15px;">
             <button class="btn-secondary" style="flex: 1;" onclick="showLocalStats()" data-i18n="localStats">📊 الإحصائيات</button>
-            <button class="btn-secondary" style="flex: 1;" onclick="switchScreen('dashboard')" data-i18n="homeBtn">🏠 الرئيسية</button>
+            <button class="btn-secondary" style="flex: 1; background: #ef4444; color: white;" onclick="switchScreen('dashboard')" data-i18n="homeBtn">⏹ إنهاء المباراة</button>
         </div>
     </div>
 
-    <!-- Stats Screens (Hidden by default) -->
+    <!-- Stats Screens -->
     <div id="screen-local-stats" class="screen">
         <div class="card">
             <h2 data-i18n="localStatsTitle">إحصائيات هذه التمرينة</h2>
@@ -254,12 +238,7 @@
             <h2 data-i18n="globalStatsTitle">الإحصائيات الشاملة</h2>
             <div style="overflow-x: auto;">
                 <table>
-                    <thead><tr>
-                        <th data-i18n="thPlayer">اللاعب</th>
-                        <th data-i18n="thGames">جيمات 🏆</th>
-                        <th data-i18n="thMatches">ماتشات 🎾</th>
-                        <th data-i18n="thWinRate">نسبة الفوز %</th>
-                    </tr></thead>
+                    <thead><tr><th data-i18n="thPlayer">اللاعب</th><th data-i18n="thGames">جيمات 🏆</th><th data-i18n="thMatches">ماتشات 🎾</th><th data-i18n="thWinRate">نسبة الفوز %</th></tr></thead>
                     <tbody id="global-stats-body"></tbody>
                 </table>
             </div>
@@ -284,22 +263,22 @@
             setupTitle: "إعداد الحجز الجديد", resNamePH: "اسم الحجز (مثال: تمرينة الخميس)", addPlayers: "إضافة لاعبين",
             playerPH: "اكتب اسم اللاعب واضغط Enter...", addBtn: "إضافة", startBtn: "🚀 بدء الحجز", cancelBtn: "إلغاء",
             teamA: "فريق أ", teamB: "فريق ب", matchesWon: "ماتشات:", 
-            serveTxt: "🎾 السيرف", localStats: "📊 الإحصائيات", homeBtn: "🏠 الرئيسية", localStatsTitle: "إحصائيات هذه التمرينة",
+            serveTxt: "🎾 السيرف", localStats: "📊 الإحصائيات", homeBtn: "⏹ إنهاء/خروج", localStatsTitle: "إحصائيات هذه التمرينة",
             thPlayer: "اللاعب", thGames: "جيمات 🏆", thMatches: "ماتشات 🎾", thWinRate: "نسبة الفوز %",
             globalStatsTitle: "الإحصائيات الشاملة", backCourt: "العودة للملعب", okBtn: "حسناً",
-            goldenAlert: "🔥 نقطة ذهبية (الجولدن بوينت)! 🔥", playBtn: "استكمال 🎾", noRes: "لا يوجد حجوزات.",
-            exportDB: "📥 حفظ نسخة", importDB: "📤 استرجاع"
+            goldenAlert: "🔥 نقطة ذهبية (الجولدن بوينت)! 🔥", playBtn: "استكمال 🎾",
+            exportDB: "📤 مشاركة الداتا", importDB: "📥 استرجاع داتا", rotateMsg: "أدر الهاتف بالعرض للمتابعة", rotateDesc: "الملعب يحتاج مساحة أوسع."
         },
         en: {
-            newRes: "➕ New Reservation", globalStats: "🌍 Global Stats", historyTitle: "Previous Reservations",
-            setupTitle: "Setup Reservation", resNamePH: "Event Name (e.g., Thursday Match)", addPlayers: "Add Players",
+            newRes: "➕ New Reservation", globalStats: "🌍 Global Stats", historyTitle: "History & Reservations",
+            setupTitle: "Setup Match", resNamePH: "Event Name (e.g., Thursday)", addPlayers: "Add Players",
             playerPH: "Type name & press Enter...", addBtn: "Add", startBtn: "🚀 Start", cancelBtn: "Cancel",
             teamA: "Team A", teamB: "Team B", matchesWon: "Matches:", 
-            serveTxt: "Serve 🎾", localStats: "📊 Stats", homeBtn: "🏠 Home", localStatsTitle: "Current Session Stats",
+            serveTxt: "Serve 🎾", localStats: "📊 Stats", homeBtn: "⏹ Exit Game", localStatsTitle: "Session Stats",
             thPlayer: "Player", thGames: "Games 🏆", thMatches: "Matches 🎾", thWinRate: "Win Rate %",
-            globalStatsTitle: "Lifetime Statistics", backCourt: "Back to Court", okBtn: "OK",
-            goldenAlert: "🔥 Golden Point! 🔥", playBtn: "Resume 🎾", noRes: "No reservations yet.",
-            exportDB: "📥 Backup", importDB: "📤 Restore"
+            globalStatsTitle: "Global Statistics", backCourt: "Back to Court", okBtn: "OK",
+            goldenAlert: "🔥 Golden Point! 🔥", playBtn: "Resume 🎾",
+            exportDB: "📤 Share Data", importDB: "📥 Import Data", rotateMsg: "Please Rotate Your Device", rotateDesc: "Landscape mode is required."
         }
     };
 
@@ -312,21 +291,27 @@
         renderDashboard(); if(currRes) updateCourt();
     }
 
-    window.addEventListener('beforeunload', e => { e.preventDefault(); e.returnValue = ''; });
+    // --- Share API (Send file directly to WhatsApp/AirDrop) ---
+    async function exportAndShareDB() {
+        const dataStr = JSON.stringify(db);
+        const file = new File([dataStr], "PadelManager_Backup.json", { type: "application/json" });
 
-    let db = { globalPlayers: {}, reservations: [] };
-    
-    function loadDB() {
-        const saved = localStorage.getItem('padelManagerPro3');
-        if (saved) db = JSON.parse(saved);
-        updateDatalist(); renderDashboard();
-    }
-    function saveDB() { localStorage.setItem('padelManagerPro3', JSON.stringify(db)); }
-
-    function exportDB() {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-        const a = document.createElement('a'); a.href = dataStr; a.download = "Padel_Backup.json";
-        document.body.appendChild(a); a.click(); a.remove();
+        // Check if Web Share API is supported for files (Works on Mobile Safari & Chrome)
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+                await navigator.share({
+                    files: [file],
+                    title: 'Padel Manager Data',
+                    text: currentLang === 'ar' ? 'ملف بيانات تطبيق بادل' : 'Padel App Backup File'
+                });
+            } catch (error) { console.log('Share canceled or failed', error); }
+        } else {
+            // Fallback for PC or unsupported browsers
+            const a = document.createElement('a'); 
+            a.href = "data:text/json;charset=utf-8," + encodeURIComponent(dataStr); 
+            a.download = "PadelManager_Backup.json";
+            document.body.appendChild(a); a.click(); a.remove();
+        }
     }
 
     function importDB(event) {
@@ -334,16 +319,37 @@
         const reader = new FileReader();
         reader.onload = e => {
             try { db = JSON.parse(e.target.result); saveDB(); loadDB(); showModal("Success", "Data restored!"); }
-            catch(err) { showModal("Error", "Invalid file."); }
+            catch(err) { showModal("Error", "Invalid file format."); }
         };
         reader.readAsText(file);
     }
 
-    function switchScreen(id) {
+    // --- Screen Orientation Lock ---
+    async function switchScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
         document.getElementById(`screen-${id}`).classList.add('active-screen');
+        
+        if(id === 'game') {
+            document.body.classList.add('in-game'); // Trigger CSS media query for iOS
+            try { if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape'); } 
+            catch (e) { console.log("Orientation lock not supported/allowed"); }
+        } else {
+            document.body.classList.remove('in-game');
+            try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } 
+            catch (e) {}
+        }
+        
         if(id === 'dashboard') renderDashboard();
     }
+
+    // Database
+    let db = { globalPlayers: {}, reservations: [] };
+    function loadDB() {
+        const saved = localStorage.getItem('padelManagerPro4');
+        if (saved) db = JSON.parse(saved);
+        updateDatalist(); renderDashboard();
+    }
+    function saveDB() { localStorage.setItem('padelManagerPro4', JSON.stringify(db)); }
 
     function showModal(title, desc, callback) {
         document.getElementById('modal-title').innerText = title;
@@ -358,7 +364,7 @@
 
     function renderDashboard() {
         let list = document.getElementById('reservations-list'); list.innerHTML = '';
-        if(db.reservations.length === 0) { list.innerHTML = `<p style="text-align:center; color:gray;">${dict[currentLang].noRes}</p>`; return; }
+        if(db.reservations.length === 0) return;
         [...db.reservations].sort((a,b) => b.id - a.id).forEach(res => {
             let dateStr = new Date(res.date).toLocaleDateString();
             list.innerHTML += `
@@ -420,6 +426,7 @@
     }
 
     function addPoint(team) {
+        if(!currRes) return;
         let opp = team === 'A' ? 'B' : 'A';
         let isGolden = (currRes.points[team] === 2 && currRes.points[opp] === 2);
         
@@ -446,51 +453,38 @@
         }
     }
 
-    // THE ULTIMATE PADEL POSITIONING LOGIC
+    // THE FIXED PADEL POSITIONING LOGIC
     function updateCourt() {
         if(!currRes || currRes.active4.length < 4) return;
         
-        document.getElementById('point-a').innerText = pointsStr[currRes.points.A] || "Win";
-        document.getElementById('point-b').innerText = pointsStr[currRes.points.B] || "Win";
+        document.getElementById('point-a').innerText = pointsStr[currRes.points.A] || "W";
+        document.getElementById('point-b').innerText = pointsStr[currRes.points.B] || "W";
         document.getElementById('match-score-a').innerText = currRes.matches.A;
         document.getElementById('match-score-b').innerText = currRes.matches.B;
         document.getElementById('golden-alert').style.display = (currRes.points.A === 2 && currRes.points.B === 2) ? 'block' : 'none';
 
-        let pA1 = currRes.active4[0], pA2 = currRes.active4[1];
-        let pB1 = currRes.active4[2], pB2 = currRes.active4[3];
-        
-        // Update Scoreboard Names
+        let pA1 = currRes.active4[0], pA2 = currRes.active4[1], pB1 = currRes.active4[2], pB2 = currRes.active4[3];
         document.getElementById('sb-players-a').innerText = `${pA1} & ${pA2}`;
         document.getElementById('sb-players-b').innerText = `${pB1} & ${pB2}`;
 
         let sr = currRes.serveFromRight;
-        let turn = currRes.matchCountInGame % 4; // 0=A1, 1=B1, 2=A2, 3=B2
+        let turn = currRes.matchCountInGame % 4; 
 
-        // Default Base Positions (Static Receivers)
-        let nAR = pA1, nAL = pA2; 
-        let nBR = pB1, nBL = pB2; 
-        let activeZone = '';
+        // Receiver Team Stays Fixed! Only Server Team Swaps.
+        let nAR = pA1, nAL = pA2, nBR = pB1, nBL = pB2, activeZone = '';
 
         if (turn === 0 || turn === 2) {
-            // Team A Serves. Team A swaps left/right. Team B Stays fixed.
-            let activeServer = (turn === 0) ? pA1 : pA2;
-            let activePartner = (turn === 0) ? pA2 : pA1;
-            if (sr) { nAR = activeServer; nAL = activePartner; activeZone = 'zone-A-Right'; } 
-            else { nAL = activeServer; nAR = activePartner; activeZone = 'zone-A-Left'; }
+            // Team A Serves (Swaps), Team B Receives (Fixed)
+            if(sr) { nAR = (turn===0)?pA1:pA2; nAL = (turn===0)?pA2:pA1; activeZone = 'zone-A-Right'; }
+            else   { nAL = (turn===0)?pA1:pA2; nAR = (turn===0)?pA2:pA1; activeZone = 'zone-A-Left'; }
         } else {
-            // Team B Serves. Team B swaps left/right. Team A Stays fixed.
-            let activeServer = (turn === 1) ? pB1 : pB2;
-            let activePartner = (turn === 1) ? pB2 : pB1;
-            // Note: B's Right is visually top-left on screen because LTR is forced
-            if (sr) { nBR = activeServer; nBL = activePartner; activeZone = 'zone-B-Right'; } 
-            else { nBL = activeServer; nBR = activePartner; activeZone = 'zone-B-Left'; }
+            // Team B Serves (Swaps), Team A Receives (Fixed)
+            if(sr) { nBR = (turn===1)?pB1:pB2; nBL = (turn===1)?pB2:pB1; activeZone = 'zone-B-Right'; }
+            else   { nBL = (turn===1)?pB1:pB2; nBR = (turn===1)?pB2:pB1; activeZone = 'zone-B-Left'; }
         }
 
-        document.getElementById('name-A-Right').innerText = nAR;
-        document.getElementById('name-A-Left').innerText = nAL;
-        // Map B's logical right/left to the fixed LTR visual layout
-        document.getElementById('name-B-Right').innerText = nBR; // Logical Right (Top-Left screen)
-        document.getElementById('name-B-Left').innerText = nBL;  // Logical Left (Top-Right screen)
+        document.getElementById('name-A-Right').innerText = nAR; document.getElementById('name-A-Left').innerText = nAL;
+        document.getElementById('name-B-Right').innerText = nBR; document.getElementById('name-B-Left').innerText = nBL;
 
         document.querySelectorAll('.player-zone').forEach(el => el.classList.remove('is-server'));
         document.getElementById(activeZone).classList.add('is-server');
